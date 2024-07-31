@@ -21,6 +21,7 @@ public class ChatRoomService {
                 .or(()->{
                     if (!!createNewChatRoomIfNotExists){
                         String chatId = createChatId(senderID, recipientId);
+                        return  Optional.of(chatId);
                     }
 
                     return Optional.empty();
@@ -31,6 +32,21 @@ public class ChatRoomService {
 
     private String createChatId(String senderID, String recipientId) {
         var chatId = String.format("%s_%s", senderID, recipientId);
-        return null;
+
+        ChatRoom senderReceipient = ChatRoom.builder()
+                .chatId(chatId)
+                .senderId(senderID)
+                .recipientId(recipientId)
+                .build();
+
+        ChatRoom receipientSender  = ChatRoom.builder()
+                .chatId(chatId)
+                .senderId(recipientId)
+                .recipientId(senderID)
+                .build();
+
+        chatRoomRepository.save(senderReceipient);
+        chatRoomRepository.save(receipientSender);
+        return chatId;
     }
 }
